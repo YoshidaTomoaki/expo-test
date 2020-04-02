@@ -33,7 +33,7 @@ const HomeScreen: React.FC<Props> = () => {
     };
   }, [photos])
 
-  const content = loading ? <Spinner /> : <CardList photos={photos} />
+  const content = loading ? <Spinner /> : <Spinner /> //<CardList photos={photos} />
 
   return <Layout><View style={{ paddingTop: 66 }}/>{content}</Layout>
 };
