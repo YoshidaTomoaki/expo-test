@@ -22,7 +22,7 @@ const CameraScreen: React.FC<Props> = () => {
     }
 
     const result = await ImagePicker.launchCameraAsync();
-    console.log(result)
+    
 
   }
 

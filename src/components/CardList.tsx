@@ -7,15 +7,15 @@ import {
   Icon,
   Text,
   Card,
-  CardItem,
-  Thumbnail
+  CardItem
 } from "native-base";
 import { Image } from "react-native"
 
 export interface Photo {
-  download_url: string
+  imageUrl: string
+  fileUrl: string
+  uid: string
   id: string
-  author: string
 }
 
 type Props = {
@@ -23,30 +23,22 @@ type Props = {
 }
 
 const CardList: React.FC<Props> = (props) => {
-  console.log(props.photos)
+  console.log(props)
+
   return (
     <>
       {props.photos.map(photo => (
         <Card key={photo.id}>
           <CardItem>
             <Left>
-              <Thumbnail
-                source={{
-                  uri: `https://na.ui-avatars.com/api/?name=${photo.author.replace(
-                    "¥s",
-                    "+"
-                  )}`
-                }}
-              />
               <Body>
-                <Text>My Image</Text>
-                <Text note>{photo.author}</Text>
+              <Text>Upload Image</Text>
               </Body>
             </Left>
           </CardItem>
           <CardItem cardBody>
             <Image
-              source={{ uri: photo.download_url }}
+              source={{ uri: photo.imageUrl }}
               style={{ height: 200, width: null, flex: 1 }}
             />
           </CardItem>

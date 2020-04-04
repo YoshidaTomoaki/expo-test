@@ -2,9 +2,7 @@ import * as React from 'react'
 import Layout from '../components/Layout'
 import { Text, Button, Icon } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
-import { View, TouchableOpacity } from 'react-native'
-import { Image, Dimensions } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
+import { View, Image, Dimensions } from 'react-native'
 import firebase from 'firebase';
 import 'firebase/firestore';
 import { decode, encode } from 'base-64'
@@ -15,32 +13,20 @@ type Props = {
 const ImageUploadScreen: React.FC<Props> = () => {
 
   const [user, setUser] = React.useState({})
-  const [init, setInit] = React.useState(false) 
+  const [url, setUrl] = React.useState('https://firebasestorage.googleapis.com/v0/b/expo-test-f6de1.appspot.com/o/hosino_touka.png?alt=media&token=22c70b67-1299-4f53-87c3-243e0379a162')
+  const [postId, setPostId] = React.useState(null)
 
-  if(!init) {
-
-    firebase.initializeApp({
-      
-    })
-
-    // expo-error https://github.com/expo/expo/issues/7507
+  // expo-error https://github.com/expo/expo/issues/7507
     // @ts-ignore
     global.crypto = require("@firebase/firestore");
     // @ts-ignore
     global.crypto.getRandomValues = byteArray => { for (let i = 0; i < byteArray.length; i++) { byteArray[i] = Math.floor(256 * Math.random()); } }
-
     // @ts-ignore
     if (!global.btoa) { global.btoa = encode; }
-
     // @ts-ignore
     if (!global.atob) { global.atob = decode; }
 
-    setInit(true)
-
-  }
-
   firebase.auth().onAuthStateChanged(user => {
-    console.log( 'user:', user )
     if (!user) {
       firebase.auth().signInAnonymously()
       setUser(user)
@@ -48,33 +34,62 @@ const ImageUploadScreen: React.FC<Props> = () => {
     setUser(user)
   })
 
+  const uploadPost = async( uid = 'NoUser', url) => {
+    const imageId: string = String(Math.random())
 
+    // ローカルfileパスをblobへ変換
+    const response = await fetch(url)
+    const blob = await response.blob()
 
-  const uploadPost = async( uid, url) => {
-    const uploadRef = await firebase.firestore().collection('post').doc(String(uid))
+    // firestorageへアップロード
+    const childRef = firebase.storage().ref().child(imageId+'.jpg')    
+    await childRef.put(blob)
 
-    uploadRef.set({ imageUrl: url}).then(()=>{ console.log('success!!' )})
+    // strageからのダウンロードURLを取得
+    const downloadUrl = await childRef
+      .getDownloadURL()
+      .then((url)=>url)
+      .catch((e)=>console.log(e))
+
+    // firestoreへポスト情報を格納
+    const docRef = await firebase.firestore().collection('post').doc()
+    await docRef.set({ imageUrl: downloadUrl, fileUrl: imageId, uid: uid})
+      .then(()=>console.log('success!!' ))
+
+    // firestoreからURLを取得
+    return docRef.get().then((doc)=>{
+      if(!doc.exists) return
+
+      console.log('!!!!!!!!!1',doc)
+
+      return { id: doc.id, ...doc.data() }
+    })
   }
 
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
-
+  const openImagePickerAsync = async () => {
+    // カメラロール認証
+    const permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
     if (permissionResult.granted === false) {
       alert("Permission to access camera roll is required!")
       return
     }
 
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
-
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images
+    });
     // @ts-ignore
-    console.log( 'user', user.uid, 'pickerResult', pickerResult.uri )
+    console.log( 'user', user?.uid, 'pickerResult', pickerResult )
 
+    // 画像をfirestoreへアップロード
     // @ts-ignore
-    uploadPost(user.uid, pickerResult.uri)
+    const {id, imageUrl, uid} = await uploadPost(user?.uid, pickerResult.uri)
+    console.log('!!!!!!!',id, imageUrl, uid)
+    setUrl(imageUrl)
+    setPostId(id)
 
   }
 
-  
 
   return(
     <Layout >
@@ -82,9 +97,29 @@ const ImageUploadScreen: React.FC<Props> = () => {
         width: Dimensions.get('screen').width,
         height: Dimensions.get('screen').height,
         display: 'flex',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         alignItems: 'center'
       }} >
+        <Image style={{height: 200, width: 200, borderRadius: 50}} source={{uri: url}}/>
+        {postId &&
+        <Button 
+          iconLeft
+          bordered
+          onPress={openImagePickerAsync}
+          style={{
+            shadowColor: '#ccc',
+            shadowOffset: {
+              width: 10,
+              height: 10,
+            },
+            shadowRadius: 0,
+            shadowOpacity: 1,
+            elevation: 10
+          }}
+        >
+          <Icon name='cog' />
+          <Text>Analyze!!</Text>
+        </Button>}
         <Button 
           iconLeft
           dark
