@@ -1,14 +1,7 @@
 import firebase from 'firebase';
 
-export default ()=> {
-
+export default () => {
   if (!firebase.apps.length) {
-
-    firebase.initializeApp({
-      
-    })
-    
-
+    firebase.initializeApp({});
   }
-
-}
+};

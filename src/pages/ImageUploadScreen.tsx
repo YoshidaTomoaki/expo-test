@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Layout from '../components/Layout'
-import { Text, Button, Icon } from 'native-base'
+import { Text, Button, Icon, Card, CardItem, Left, Body } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
 import { View, Image, Dimensions } from 'react-native'
 import firebase from 'firebase';
@@ -13,7 +13,7 @@ type Props = {
 const ImageUploadScreen: React.FC<Props> = () => {
 
   const [user, setUser] = React.useState({})
-  const [url, setUrl] = React.useState('https://firebasestorage.googleapis.com/v0/b/expo-test-f6de1.appspot.com/o/hosino_touka.png?alt=media&token=22c70b67-1299-4f53-87c3-243e0379a162')
+  const [url, setUrl] = React.useState('https://firebasestorage.googleapis.com/v0/b/expo-test-f6de1.appspot.com/o/0.2942569366762261.jpg?alt=media&token=acadf2e7-b312-4e2c-acfb-5a9fee7cd0a9')
   const [postId, setPostId] = React.useState(null)
 
   // expo-error https://github.com/expo/expo/issues/7507
@@ -42,7 +42,7 @@ const ImageUploadScreen: React.FC<Props> = () => {
     const blob = await response.blob()
 
     // firestorageへアップロード
-    const childRef = firebase.storage().ref().child(imageId+'.jpg')    
+    const childRef = firebase.storage().ref().child(imageId+'.jpg')
     await childRef.put(blob)
 
     // strageからのダウンロードURLを取得
@@ -100,9 +100,20 @@ const ImageUploadScreen: React.FC<Props> = () => {
         justifyContent: 'center',
         alignItems: 'center'
       }} >
-        <Image style={{height: 200, width: 200, borderRadius: 50}} source={{uri: url}}/>
+        <Card>
+          <CardItem>
+            <Left>
+              <Body>
+                <Text>Upload Image</Text>
+              </Body>
+            </Left>
+            </CardItem>
+            <CardItem cardBody>
+              <Image style={{height: 200, width: 200, borderRadius: 50, margin: 50}} source={{uri: url}}/>
+          </CardItem>
+        </Card>
         {postId &&
-        <Button 
+        <Button
           iconLeft
           bordered
           onPress={openImagePickerAsync}
@@ -120,7 +131,7 @@ const ImageUploadScreen: React.FC<Props> = () => {
           <Icon name='cog' />
           <Text>Analyze!!</Text>
         </Button>}
-        <Button 
+        <Button
           iconLeft
           dark
           onPress={openImagePickerAsync}
