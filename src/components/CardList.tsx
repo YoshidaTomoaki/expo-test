@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react';
 import {
   Button,
   Left,
@@ -7,32 +7,30 @@ import {
   Icon,
   Text,
   Card,
-  CardItem
-} from "native-base";
-import { Image } from "react-native"
+  CardItem,
+} from 'native-base';
+import { Image } from 'react-native';
 
 export interface Photo {
-  imageUrl: string
-  fileUrl: string
-  uid: string
-  id: string
+  imageUrl: string;
+  fileUrl: string;
+  uid: string;
+  id: string;
 }
 
 type Props = {
-  photos: Photo[]
-}
+  photos: Photo[];
+};
 
 const CardList: React.FC<Props> = (props) => {
-  console.log(props)
-
   return (
     <>
-      {props.photos.map(photo => (
+      {props.photos.map((photo) => (
         <Card key={photo.id}>
           <CardItem>
             <Left>
               <Body>
-              <Text>Upload Image</Text>
+                <Text>Upload Image</Text>
               </Body>
             </Left>
           </CardItem>
@@ -44,9 +42,7 @@ const CardList: React.FC<Props> = (props) => {
           </CardItem>
           <CardItem>
             <Left>
-              <Button
-                transparent
-              >
+              <Button transparent>
                 <Icon active name="thumbs-up" />
               </Button>
             </Left>
@@ -62,8 +58,8 @@ const CardList: React.FC<Props> = (props) => {
           </CardItem>
         </Card>
       ))}
-  </>
- )
-}
+    </>
+  );
+};
 
-export default CardList
+export default CardList;

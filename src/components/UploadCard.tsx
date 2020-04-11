@@ -2,7 +2,11 @@ import * as React from 'react';
 import { Text, Card, CardItem, Left, Body } from 'native-base';
 import { Image } from 'react-native';
 
-const Component = ({ url }) => {
+type Props = {
+  url: string;
+};
+
+const Component: React.FC<Props> = ({ url }) => {
   return (
     <Card>
       <CardItem>
