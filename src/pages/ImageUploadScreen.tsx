@@ -1,5 +1,6 @@
 import * as React from 'react'
 import Layout from '../components/Layout'
+import UploadCard from '../components/UploadCard'
 import { Text, Button, Icon, Card, CardItem, Left, Body } from 'native-base'
 import * as ImagePicker from 'expo-image-picker'
 import { View, Image, Dimensions } from 'react-native'
@@ -100,18 +101,7 @@ const ImageUploadScreen: React.FC<Props> = () => {
         justifyContent: 'center',
         alignItems: 'center'
       }} >
-        <Card>
-          <CardItem>
-            <Left>
-              <Body>
-                <Text>Upload Image</Text>
-              </Body>
-            </Left>
-            </CardItem>
-            <CardItem cardBody>
-              <Image style={{height: 200, width: 200, borderRadius: 50, margin: 50}} source={{uri: url}}/>
-          </CardItem>
-        </Card>
+        <UploadCard url={url} />
         {postId &&
         <Button
           iconLeft
